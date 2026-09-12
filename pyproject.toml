@@ -1,0 +1,40 @@
+[project]
+name = "speech-server"
+version = "0.1.0"
+description = "Self-hosted OpenAI-compatible STT + TTS servers and a Pipecat voice agent, packaged for NixOS"
+readme = "README.md"
+authors = [
+    { name = "carlschader", email = "carlschader@proton.me" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.6,<1",
+    "uvicorn[standard]>=0.32.0,<1",
+]
+
+[project.scripts]
+speech-stt = "speech_server.stt:main"
+speech-tts = "speech_server.tts:main"
+speech-agent = "speech_server.agent:main"
+
+# PEP 735 dependency groups. uv2nix (nix/env.nix) builds one venv that
+# contains all of them (workspace.deps.all).
+[dependency-groups]
+stt = [
+    "faster-whisper>=1.2.1,<2",
+]
+tts = [
+    "kokoro-onnx>=0.6.1,<1",
+    # MP3 encoding for /v1/audio/speech (OWUI plays audio/mpeg natively).
+    "av>=14.0.0",
+]
+agent = [
+    # websocket: FastAPI websocket transport.
+    # webrtc: SmallWebRTC transport (the prebuilt browser UI's default mode).
+    # runner: pipecat dev runner (FastAPI app + prebuilt client UI).
+    "pipecat-ai[websocket,webrtc,runner]>=1.10.0,<2",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"

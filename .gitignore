@@ -1,0 +1,5 @@
+result
+.venv
+__pycache__/
+*.pyc
+models/
