@@ -461,6 +461,12 @@ in {
       ++ lib.optional cfg.tts.openFirewall cfg.tts.port
       ++ lib.optional cfg.agent.openFirewall cfg.agent.port;
 
-    services.open-webui.environment = lib.mkIf cfg.openWebUi.enable cfg.openWebUi.env;
+    # On hosts where Open WebUI is enabled through services.sglang.ui, keep
+    # openWebUi.enable off and merge `services.speech.openWebUi.env` into
+    # services.sglang.ui.environment instead (that module owns the env vars).
+    services.open-webui = lib.mkIf cfg.openWebUi.enable {
+      enable = true;
+      environment = cfg.openWebUi.env;
+    };
   };
 }
