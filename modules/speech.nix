@@ -86,7 +86,7 @@
     };
 
   sttUnit =
-    lib.mkIf cfg.stt.enable (
+    lib.mkIf (cfg.enable && cfg.stt.enable) (
       mkService {
         unit = "speech-stt";
         description = "speech-server STT (OpenAI-compatible, faster-whisper ${cfg.stt.model})";
@@ -112,7 +112,7 @@
     );
 
   ttsUnit =
-    lib.mkIf cfg.tts.enable (
+    lib.mkIf (cfg.enable && cfg.tts.enable) (
       mkService {
         unit = "speech-tts";
         description = "speech-server TTS (OpenAI-compatible, Kokoro-82M)";
@@ -132,7 +132,7 @@
     );
 
   agentUnit =
-    lib.mkIf cfg.agent.enable (
+    lib.mkIf (cfg.enable && cfg.agent.enable) (
       mkService {
         unit = "speech-agent";
         description = "speech-server voice agent (Pipecat: STT -> LLM -> TTS)";
@@ -168,6 +168,10 @@
     );
 
 in {
+  # Unit definitions are conditional attrsets; NixOS only honours `imports`
+  # at the top level of a module.
+  imports = [ sttUnit ttsUnit agentUnit ];
+
   options.services.speech = {
     enable = lib.mkEnableOption "the speech stack (enable individual services below)";
 
@@ -449,12 +453,6 @@ in {
       description = "speech-server service user";
     };
     users.groups.${user} = { };
-
-    imports = [
-      sttUnit
-      ttsUnit
-      agentUnit
-    ];
 
     networking.firewall.allowedTCPPorts =
       lib.optional cfg.stt.openFirewall cfg.stt.port

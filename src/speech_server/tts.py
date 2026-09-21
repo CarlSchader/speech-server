@@ -75,8 +75,6 @@ VOICE_LANG = {
 
 MAX_INPUT_CHARS = 20_000
 
-app = FastAPI(title="speech-server TTS")
-
 
 def _download_file(url: str, dest: str) -> None:
     log.info("downloading %s -> %s", url, dest)
@@ -132,17 +130,19 @@ def _to_s16(audio: np.ndarray) -> bytes:
 def _encode_mp3(pcm: bytes, sample_rate: int) -> bytes:
     import av
 
-    frame = av.AudioFrame.from_ndarray(
-        np.frombuffer(pcm, dtype=np.int16), format="s16", layout="mono"
-    )
+    arr = np.frombuffer(pcm, dtype=np.int16).reshape(1, -1)  # (channels, samples)
+    frame = av.AudioFrame.from_ndarray(arr, format="s16", layout="mono")
     frame.time_base = Fraction(1, sample_rate)
+    # from_ndarray leaves sample_rate at 0; PyAV's encoder resampler builds
+    # an abuffer filter from it, so an unset rate makes graph init fail.
+    frame.sample_rate = sample_rate
     out = io.BytesIO()
     container = av.open(out, mode="w", format="mp3")
     stream = container.add_stream("libmp3lame", rate=sample_rate)
     for packet in stream.encode(frame):
-        out.write(packet.to_bytes())
+        container.mux(packet)
     for packet in stream.encode(None):  # flush
-        out.write(packet.to_bytes())
+        container.mux(packet)
     container.close()
     return out.getvalue()
 
@@ -168,6 +168,9 @@ async def lifespan(app: FastAPI):
     app.state.kokoro = Kokoro(MODEL_FILE, VOICES_FILE)
     log.info("kokoro ready; voices: %s", ", ".join(app.state.kokoro.get_voices()))
     yield
+
+
+app = FastAPI(title="speech-server TTS", lifespan=lifespan)
 
 
 @app.get("/health")

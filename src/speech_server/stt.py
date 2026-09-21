@@ -39,8 +39,6 @@ DEVICE = os.environ.get("STT_DEVICE", "auto")
 COMPUTE_TYPE = os.environ.get("STT_COMPUTE_TYPE", "")
 VAD_FILTER = os.environ.get("STT_VAD_FILTER", "true").lower() in ("1", "true", "yes")
 
-app = FastAPI(title="speech-server STT")
-
 
 def _resolve_backend() -> tuple[str, str]:
     """Pick (device, compute_type); on this host the CTranslate2 aarch64
