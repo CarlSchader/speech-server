@@ -19,8 +19,7 @@
 
   user = "speech";
 
-  # Shared hardening for all three units: pure-CPU workloads, no GPU, no
-  # privileged access. Models live in the per-service StateDirectory.
+  # Shared hardening. CUDA units explicitly allow NVIDIA device nodes; Models live in the per-service StateDirectory.
   hardening = {
     NoNewPrivileges = true;
     PrivateTmp = true;
@@ -36,37 +35,40 @@
     RestrictSUIDSGID = true;
     LockPersonality = true;
     SystemCallArchitectures = "native";
-    RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" "AF_NETLINK" ];
+    RestrictAddressFamilies = ["AF_INET" "AF_INET6" "AF_UNIX" "AF_NETLINK"];
     UMask = "0077";
   };
 
-  mkService =
-    {
-      unit,
-      description,
-      script,
-      stateDir,
-      memoryMax,
-      env,
-      environmentFile,
-      after ? [ ],
-      wants ? [ ],
-      timeoutStartSec ? "30min",
-    }:
-    {
-      systemd.services.${unit} = {
-        description = description;
-        wantedBy = [ "multi-user.target" ];
-        wants = [ "network-online.target" ] ++ wants;
-        after = [ "network-online.target" ] ++ after;
-        path = [cfg.package];
-        environment =
-          {
-            HOME = "/var/lib/${stateDir}";
-            XDG_CACHE_HOME = "/var/lib/${stateDir}/.cache";
-          }
-          // env;
-        serviceConfig = {
+  mkService = {
+    unit,
+    description,
+    script,
+    stateDir,
+    memoryMax,
+    env,
+    environmentFile,
+    gpu ? false,
+    after ? [],
+    wants ? [],
+    timeoutStartSec ? "30min",
+  }: {
+    systemd.services.${unit} = {
+      description = description;
+      wantedBy = ["multi-user.target"];
+      wants = ["network-online.target"] ++ wants;
+      after = ["network-online.target"] ++ after;
+      path = [cfg.package];
+      environment =
+        {
+          HOME = "/var/lib/${stateDir}";
+          XDG_CACHE_HOME = "/var/lib/${stateDir}/.cache";
+        }
+        // lib.optionalAttrs gpu {
+          LD_LIBRARY_PATH = lib.makeLibraryPath cfg.cudaLibraries + ":/run/opengl-driver/lib";
+        }
+        // env;
+      serviceConfig =
+        {
           ExecStart = "${cfg.package}/bin/${script}";
           User = user;
           Group = user;
@@ -81,96 +83,104 @@
           EnvironmentFile = lib.optional (environmentFile != null) environmentFile;
           MemoryMax = memoryMax;
         }
-        // hardening;
-      };
+        // hardening
+        // lib.optionalAttrs gpu {
+          PrivateDevices = false;
+          DevicePolicy = "closed";
+          DeviceAllow = ["char-nvidia-frontend rw" "char-nvidia-uvm rw" "char-nvidia-caps rw"];
+        };
     };
+  };
 
-  sttUnit =
-    lib.mkIf (cfg.enable && cfg.stt.enable) (
-      mkService {
-        unit = "speech-stt";
-        description = "speech-server STT (OpenAI-compatible, faster-whisper ${cfg.stt.model})";
-        script = "speech-stt";
-        stateDir = "speech-stt";
-        memoryMax = cfg.stt.memoryMax;
-        environmentFile = cfg.stt.environmentFile;
-        env =
-          {
-            STT_HOST = cfg.stt.host;
-            STT_PORT = (toString cfg.stt.port);
-            STT_MODEL = cfg.stt.model;
-            STT_DEVICE = cfg.stt.device;
-            STT_VAD_FILTER = (toString cfg.stt.vadFilter);
-            # faster-whisper downloads model weights here on first start.
-            HF_HOME = "/var/lib/speech-stt/huggingface";
-          }
-          // lib.optionalAttrs (cfg.stt.computeType != null) {
-            STT_COMPUTE_TYPE = cfg.stt.computeType;
-          }
-          // cfg.stt.environment;
-      }
-    );
+  sttUnit = lib.mkIf (cfg.enable && cfg.stt.enable) (
+    mkService {
+      unit = "speech-stt";
+      description = "speech-server STT (OpenAI-compatible, faster-whisper ${cfg.stt.model})";
+      script = "speech-stt";
+      stateDir = "speech-stt";
+      memoryMax = cfg.stt.memoryMax;
+      environmentFile = cfg.stt.environmentFile;
+      gpu = cfg.stt.device == "cuda";
+      env =
+        {
+          STT_HOST = cfg.stt.host;
+          STT_PORT = toString cfg.stt.port;
+          STT_MODEL = cfg.stt.model;
+          STT_DEVICE = cfg.stt.device;
+          STT_CPU_THREADS = toString cfg.stt.cpuThreads;
+          STT_VAD_FILTER = toString cfg.stt.vadFilter;
+          # faster-whisper downloads model weights here on first start.
+          HF_HOME = "/var/lib/speech-stt/huggingface";
+        }
+        // lib.optionalAttrs (cfg.stt.computeType != null) {
+          STT_COMPUTE_TYPE = cfg.stt.computeType;
+        }
+        // cfg.stt.environment;
+    }
+  );
 
-  ttsUnit =
-    lib.mkIf (cfg.enable && cfg.tts.enable) (
-      mkService {
-        unit = "speech-tts";
-        description = "speech-server TTS (OpenAI-compatible, Kokoro-82M)";
-        script = "speech-tts";
-        stateDir = "speech-tts";
-        memoryMax = cfg.tts.memoryMax;
-        environmentFile = cfg.tts.environmentFile;
-        timeoutStartSec = "20min";
-        env =
-          {
-            TTS_HOST = cfg.tts.host;
-            TTS_PORT = (toString cfg.tts.port);
-            TTS_VOICE = cfg.tts.voice;
-          }
-          // cfg.tts.environment;
-      }
-    );
+  ttsUnit = lib.mkIf (cfg.enable && cfg.tts.enable) (
+    mkService {
+      unit = "speech-tts";
+      description = "speech-server TTS (OpenAI-compatible, Kokoro-82M)";
+      script = "speech-tts";
+      stateDir = "speech-tts";
+      memoryMax = cfg.tts.memoryMax;
+      environmentFile = cfg.tts.environmentFile;
+      gpu = cfg.tts.device == "cuda";
+      timeoutStartSec = "20min";
+      env =
+        {
+          TTS_HOST = cfg.tts.host;
+          TTS_PORT = toString cfg.tts.port;
+          TTS_VOICE = cfg.tts.voice;
+          TTS_DEVICE = cfg.tts.device;
+          TTS_CPU_THREADS = toString cfg.tts.cpuThreads;
+        }
+        // cfg.tts.environment;
+    }
+  );
 
-  agentUnit =
-    lib.mkIf (cfg.enable && cfg.agent.enable) (
-      mkService {
-        unit = "speech-agent";
-        description = "speech-server voice agent (Pipecat: STT -> LLM -> TTS)";
-        script = "speech-agent";
-        stateDir = "speech-agent";
-        memoryMax = cfg.agent.memoryMax;
-        environmentFile = cfg.agent.environmentFile;
-        # Start after the local backends it talks to.
-        after = [ ]
-          ++ lib.optionals cfg.stt.enable [ "speech-stt.service" ]
-          ++ lib.optionals cfg.tts.enable [ "speech-tts.service" ];
-        wants = [ ]
-          ++ lib.optionals cfg.stt.enable [ "speech-stt.service" ]
-          ++ lib.optionals cfg.tts.enable [ "speech-tts.service" ];
-        env =
-          {
-            AGENT_HOST = cfg.agent.host;
-            AGENT_PORT = (toString cfg.agent.port);
-            LLM_BASE_URL = cfg.agent.llm.baseURL;
-            LLM_API_KEY = cfg.agent.llm.apiKey;
-            LLM_MODEL = cfg.agent.llm.model;
-            STT_BASE_URL = "http://127.0.0.1:${toString cfg.stt.port}/v1";
-            STT_MODEL = cfg.agent.sttModel;
-            TTS_BASE_URL = "http://127.0.0.1:${toString cfg.tts.port}/v1";
-            TTS_MODEL = "tts-1";
-            TTS_VOICE = cfg.agent.voice;
-          }
-          // lib.optionalAttrs (cfg.agent.systemPrompt != null) {
-            AGENT_SYSTEM_PROMPT = cfg.agent.systemPrompt;
-          }
-          // cfg.agent.environment;
-      }
-    );
-
+  agentUnit = lib.mkIf (cfg.enable && cfg.agent.enable) (
+    mkService {
+      unit = "speech-agent";
+      description = "speech-server voice agent (Pipecat: STT -> LLM -> TTS)";
+      script = "speech-agent";
+      stateDir = "speech-agent";
+      memoryMax = cfg.agent.memoryMax;
+      environmentFile = cfg.agent.environmentFile;
+      # Start after the local backends it talks to.
+      after =
+        []
+        ++ lib.optionals cfg.stt.enable ["speech-stt.service"]
+        ++ lib.optionals cfg.tts.enable ["speech-tts.service"];
+      wants =
+        []
+        ++ lib.optionals cfg.stt.enable ["speech-stt.service"]
+        ++ lib.optionals cfg.tts.enable ["speech-tts.service"];
+      env =
+        {
+          AGENT_HOST = cfg.agent.host;
+          AGENT_PORT = toString cfg.agent.port;
+          LLM_BASE_URL = cfg.agent.llm.baseURL;
+          LLM_API_KEY = cfg.agent.llm.apiKey;
+          LLM_MODEL = cfg.agent.llm.model;
+          STT_BASE_URL = "http://127.0.0.1:${toString cfg.stt.port}/v1";
+          STT_MODEL = cfg.agent.sttModel;
+          TTS_BASE_URL = "http://127.0.0.1:${toString cfg.tts.port}/v1";
+          TTS_MODEL = "tts-1";
+          TTS_VOICE = cfg.agent.voice;
+        }
+        // lib.optionalAttrs (cfg.agent.systemPrompt != null) {
+          AGENT_SYSTEM_PROMPT = cfg.agent.systemPrompt;
+        }
+        // cfg.agent.environment;
+    }
+  );
 in {
   # Unit definitions are conditional attrsets; NixOS only honours `imports`
   # at the top level of a module.
-  imports = [ sttUnit ttsUnit agentUnit ];
+  imports = [sttUnit ttsUnit agentUnit];
 
   options.services.speech = {
     enable = lib.mkEnableOption "the speech stack (enable individual services below)";
@@ -183,6 +193,12 @@ in {
         `speech-server.packages.''${builtins.currentSystem}.speechEnv`,
         the environment pinned by this flake's uv.lock.
       '';
+    };
+
+    cudaLibraries = lib.mkOption {
+      type = lib.types.listOf lib.types.package;
+      default = with pkgs.cudaPackages_12; [cuda_cudart libcublas libcufft libcurand cudnn];
+      description = "CUDA 12/cuDNN 9 runtime libraries for CTranslate2 and ONNX Runtime GPU.";
     };
 
     stt = {
@@ -218,6 +234,12 @@ in {
         description = "Inference device: `auto`, `cpu` or `cuda`.";
       };
 
+      cpuThreads = lib.mkOption {
+        type = lib.types.ints.positive;
+        default = 4;
+        description = "CTranslate2 CPU worker threads.";
+      };
+
       computeType = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
@@ -239,7 +261,7 @@ in {
 
       environment = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
-        default = { };
+        default = {};
         description = "Extra environment variables for the STT service.";
       };
 
@@ -251,6 +273,16 @@ in {
     };
 
     tts = {
+      device = lib.mkOption {
+        type = lib.types.enum ["cpu" "cuda"];
+        default = "cpu";
+        description = "ONNX execution provider; CUDA needs speechEnvCuda (x86_64 only).";
+      };
+      cpuThreads = lib.mkOption {
+        type = lib.types.ints.positive;
+        default = 4;
+        description = "ONNX Runtime intra-op CPU threads.";
+      };
       enable = lib.mkEnableOption "OpenAI-compatible TTS server (Kokoro-82M)";
 
       host = lib.mkOption {
@@ -289,7 +321,7 @@ in {
 
       environment = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
-        default = { };
+        default = {};
         description = ''
           Extra environment variables for the TTS service (e.g.
           `TTS_MODEL_FILE` / `TTS_VOICES_FILE` to pin local model files).
@@ -371,7 +403,7 @@ in {
 
       environment = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
-        default = { };
+        default = {};
         description = "Extra environment variables for the agent service.";
       };
 
@@ -412,18 +444,17 @@ in {
 
       env = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
-        default =
-          {
-            AUDIO_TTS_ENGINE = "openai";
-            AUDIO_TTS_OPENAI_API_BASE_URL = "http://127.0.0.1:${toString cfg.tts.port}/v1";
-            AUDIO_TTS_OPENAI_API_KEY = cfg.openWebUi.apiKey;
-            AUDIO_TTS_MODEL = cfg.openWebUi.ttsModel;
-            AUDIO_TTS_VOICE = cfg.openWebUi.voice;
-            AUDIO_STT_ENGINE = "openai";
-            AUDIO_STT_OPENAI_API_BASE_URL = "http://127.0.0.1:${toString cfg.stt.port}/v1";
-            AUDIO_STT_OPENAI_API_KEY = cfg.openWebUi.apiKey;
-            AUDIO_STT_MODEL = cfg.openWebUi.sttModel;
-          };
+        default = {
+          AUDIO_TTS_ENGINE = "openai";
+          AUDIO_TTS_OPENAI_API_BASE_URL = "http://127.0.0.1:${toString cfg.tts.port}/v1";
+          AUDIO_TTS_OPENAI_API_KEY = cfg.openWebUi.apiKey;
+          AUDIO_TTS_MODEL = cfg.openWebUi.ttsModel;
+          AUDIO_TTS_VOICE = cfg.openWebUi.voice;
+          AUDIO_STT_ENGINE = "openai";
+          AUDIO_STT_OPENAI_API_BASE_URL = "http://127.0.0.1:${toString cfg.stt.port}/v1";
+          AUDIO_STT_OPENAI_API_KEY = cfg.openWebUi.apiKey;
+          AUDIO_STT_MODEL = cfg.openWebUi.sttModel;
+        };
         defaultText = lib.literalExpression "see description";
         description = ''
           The computed `AUDIO_*` environment variables. When Open WebUI is
@@ -452,7 +483,7 @@ in {
       home = "/var/lib/speech";
       description = "speech-server service user";
     };
-    users.groups.${user} = { };
+    users.groups.${user} = {};
 
     networking.firewall.allowedTCPPorts =
       lib.optional cfg.stt.openFirewall cfg.stt.port

@@ -1,0 +1,1545 @@
+{
+  "hardware": {
+    "cpu": "AMD Ryzen 9 7900X, 12 cores/24 threads",
+    "gpu": "RTX 4090 24 GiB",
+    "ram": "32 GiB",
+    "driver": "595.104.02"
+  },
+  "date": "2026-10-26",
+  "method": "Sequential config sweep on live workstation; 1 first call + 5 warm runs per isolated case; 3 image requests per coexistence configuration; image service temporary loopback, GPU resident, CUDA backend, VAE tiling, MemoryMax6G/MemorySwapMax0; synthetic audio only. Not a controlled idle-host or statistical significance study.",
+  "failures": [
+    "Original production CPU-offload image baseline at 1024x1024 exhausted host RAM, killing sd-cpp and a Steam helper; no completed baseline timings.",
+    "First temporary invocation omitted NVIDIA runtime path, fell back to CPU, and hit its 6GiB cgroup cap. Excluded from timings."
+  ],
+  "results": {
+    "coexist-vram-baseline": {
+      "mode": "baseline",
+      "records": [
+        {
+          "image_seconds": 28.868941233027726,
+          "speech": []
+        },
+        {
+          "image_seconds": 26.278233996941708,
+          "speech": []
+        },
+        {
+          "image_seconds": 26.253129106014967,
+          "speech": []
+        }
+      ],
+      "median_image_seconds": 26.278233996941708,
+      "sampled_peak_total_gpu_mib": 14452,
+      "min_available_ram_mib": 9877.8046875,
+      "max_speech_process_rss_mib": 87.1015625
+    },
+    "coexist-vram-cpu": {
+      "mode": "cpu",
+      "records": [
+        {
+          "image_seconds": 26.650118326069787,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 2.3288416269933805,
+              "tts_seconds": 0.43711091589648277,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.6925654381047934,
+              "tts_seconds": 2.960589859983884,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.2920598560012877,
+              "tts_seconds": 0.43759569502435625,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.701415196992457,
+              "tts_seconds": 2.7295758969848976,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.288206311990507,
+              "tts_seconds": 0.44249993201810867,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.660965603077784,
+              "tts_seconds": 2.827834287076257,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.2594024029094726,
+              "tts_seconds": 0.3582977349869907,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": false
+            }
+          ]
+        },
+        {
+          "image_seconds": 26.626600674004294,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 2.2689439579844475,
+              "tts_seconds": 0.4399744611000642,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.767860318068415,
+              "tts_seconds": 2.804059633985162,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.295602755038999,
+              "tts_seconds": 0.43049729394260794,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.6683482320513576,
+              "tts_seconds": 2.851793123059906,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.330094816046767,
+              "tts_seconds": 0.43324496201239526,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.667932907002978,
+              "tts_seconds": 2.6595730329863727,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.3143268020357937,
+              "tts_seconds": 0.3501117709092796,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": false
+            }
+          ]
+        },
+        {
+          "image_seconds": 26.718818677938543,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 2.2836562180891633,
+              "tts_seconds": 0.3513709499966353,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.6759048079838976,
+              "tts_seconds": 2.7978524620411918,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.285353359999135,
+              "tts_seconds": 0.4479431000072509,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.5927533430512995,
+              "tts_seconds": 2.837644797982648,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.2992236249847338,
+              "tts_seconds": 0.44117110793013126,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.6712308020796627,
+              "tts_seconds": 2.8183414610102773,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 2.3082918759901077,
+              "tts_seconds": 0.36174197995569557,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": false
+            }
+          ]
+        }
+      ],
+      "median_image_seconds": 26.650118326069787,
+      "sampled_peak_total_gpu_mib": 14257,
+      "min_available_ram_mib": 12164.87890625,
+      "max_speech_process_rss_mib": 2436.34375
+    },
+    "coexist-vram-cuda": {
+      "mode": "cuda",
+      "records": [
+        {
+          "image_seconds": 32.461166565073654,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 0.5011868119472638,
+              "tts_seconds": 0.33061807905323803,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.2978314900537953,
+              "tts_seconds": 2.2667110809125006,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.45181309897452593,
+              "tts_seconds": 0.3789456899976358,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.2224930139491335,
+              "tts_seconds": 2.274335846072063,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5182486840058118,
+              "tts_seconds": 0.2668800170067698,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.268146377056837,
+              "tts_seconds": 2.2601243830285966,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.4336883530486375,
+              "tts_seconds": 0.3789509560447186,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.2244756600121036,
+              "tts_seconds": 2.2825198729988188,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5125340380473062,
+              "tts_seconds": 0.2653694659238681,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.251338687958196,
+              "tts_seconds": 2.2640512300422415,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.44787721103057265,
+              "tts_seconds": 0.3779084619600326,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 1.6934064429951832,
+              "tts_seconds": 2.1088200559606776,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.3335045570274815,
+              "tts_seconds": 0.23870547802653164,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 0.5917810149258003,
+              "tts_seconds": 0.6448850089218467,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": false
+            }
+          ]
+        },
+        {
+          "image_seconds": 32.376720699016005,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 0.5165386380394921,
+              "tts_seconds": 0.31440091296099126,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.3038574049714953,
+              "tts_seconds": 2.2632290580077097,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.4534380550030619,
+              "tts_seconds": 0.379269456025213,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.2217593899695203,
+              "tts_seconds": 2.2852651920402423,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5137708029942587,
+              "tts_seconds": 0.2602154240012169,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.5737633920507506,
+              "tts_seconds": 2.280307337990962,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5117881260812283,
+              "tts_seconds": 0.26428283599670976,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.5719509900081903,
+              "tts_seconds": 2.2756387509871274,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.516027229023166,
+              "tts_seconds": 0.26893346407450736,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.565475523006171,
+              "tts_seconds": 2.2811815550085157,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5145964259281754,
+              "tts_seconds": 0.263534949044697,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 1.5596100890543312,
+              "tts_seconds": 2.121911561000161,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.18181785102933645,
+              "tts_seconds": 0.08038567204494029,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 0.2442007469944656,
+              "tts_seconds": 0.6457724410574883,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": false
+            }
+          ]
+        },
+        {
+          "image_seconds": 32.39329230191652,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 0.5245744939893484,
+              "tts_seconds": 0.3088640720816329,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.3027591939317062,
+              "tts_seconds": 2.2653455520048738,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.45135318592656404,
+              "tts_seconds": 0.38064012001268566,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.223414408043027,
+              "tts_seconds": 2.281089837080799,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5135879470035434,
+              "tts_seconds": 0.265244627953507,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.572945737047121,
+              "tts_seconds": 2.279875195934437,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5149201690219343,
+              "tts_seconds": 0.2642100900411606,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.5703984720166773,
+              "tts_seconds": 2.2800906399497762,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5130617909599096,
+              "tts_seconds": 0.26582989608868957,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.5703404410742223,
+              "tts_seconds": 2.281247576000169,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5129277060041204,
+              "tts_seconds": 0.26375799800734967,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 1.5601940440246835,
+              "tts_seconds": 2.1181315010180697,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.19183884200174361,
+              "tts_seconds": 0.07939590502064675,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 0.2521159310126677,
+              "tts_seconds": 0.6426234699320048,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": false
+            }
+          ]
+        }
+      ],
+      "median_image_seconds": 32.39329230191652,
+      "sampled_peak_total_gpu_mib": 17954,
+      "min_available_ram_mib": 13923.765625,
+      "max_speech_process_rss_mib": 1832.80078125
+    },
+    "coexist-vram-mixed": {
+      "mode": "mixed",
+      "records": [
+        {
+          "image_seconds": 28.253823084989563,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 0.5069845849648118,
+              "tts_seconds": 0.34792036400176585,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.2281615869142115,
+              "tts_seconds": 2.7415746500482783,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5299893469782546,
+              "tts_seconds": 0.42845010303426534,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.15366232895758,
+              "tts_seconds": 2.899313495028764,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5317205740138888,
+              "tts_seconds": 0.4800351019948721,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.2110585139598697,
+              "tts_seconds": 2.9247787720523775,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5288890859810635,
+              "tts_seconds": 0.4370896159671247,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.2299334099516273,
+              "tts_seconds": 2.8452826160937548,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5140927109168842,
+              "tts_seconds": 0.36478629300836474,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 1.6149334000656381,
+              "tts_seconds": 2.819627428893,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": false
+            }
+          ]
+        },
+        {
+          "image_seconds": 28.23972410999704,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 0.5178507380187511,
+              "tts_seconds": 0.41772276803385466,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.452643897035159,
+              "tts_seconds": 2.8399006959516555,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5117665310390294,
+              "tts_seconds": 0.43931604409590364,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.3395755770616233,
+              "tts_seconds": 2.8289947799639776,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5175438189180568,
+              "tts_seconds": 0.4418889730004594,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.3375678529264405,
+              "tts_seconds": 2.8945398030336946,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.5350686849560589,
+              "tts_seconds": 0.38004827790427953,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.329768043011427,
+              "tts_seconds": 2.626187277957797,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.38250759604852647,
+              "tts_seconds": 0.47084449196700007,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 1.5812421269947663,
+              "tts_seconds": 2.6603060769848526,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": false
+            }
+          ]
+        },
+        {
+          "image_seconds": 28.25881738809403,
+          "speech": [
+            {
+              "case": "short",
+              "stt_seconds": 0.5260068569332361,
+              "tts_seconds": 0.35850714799016714,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.1941545059671625,
+              "tts_seconds": 2.900921758962795,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.3853608639910817,
+              "tts_seconds": 0.4342321869917214,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.3962963330559433,
+              "tts_seconds": 2.947355865035206,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.370323228999041,
+              "tts_seconds": 0.42052991094533354,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.371777512016706,
+              "tts_seconds": 2.8632982559502125,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.4232715470716357,
+              "tts_seconds": 0.46320406708400697,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 2.3618806219892576,
+              "tts_seconds": 2.9669102679472417,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "short",
+              "stt_seconds": 0.3070184469688684,
+              "tts_seconds": 0.43105911591555923,
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666,
+              "image_still_running_at_end": true
+            },
+            {
+              "case": "long",
+              "stt_seconds": 1.5721284250030294,
+              "tts_seconds": 2.4588012089952826,
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668,
+              "image_still_running_at_end": false
+            }
+          ]
+        }
+      ],
+      "median_image_seconds": 28.253823084989563,
+      "sampled_peak_total_gpu_mib": 15850,
+      "min_available_ram_mib": 13521.828125,
+      "max_speech_process_rss_mib": 2098.87890625
+    },
+    "prepare": {
+      "task": "prepare",
+      "device": "cpu",
+      "threads": 4,
+      "compute": "int8",
+      "runs": 5,
+      "cases": {
+        "short": {
+          "first_seconds": 0.5278284379746765,
+          "warm_seconds": [
+            0.5278284379746765
+          ],
+          "median_seconds": 0.5278284379746765,
+          "max_seconds": 0.5278284379746765,
+          "median_rtf": 0.17520306637796298,
+          "outputs": [
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            }
+          ]
+        },
+        "long": {
+          "first_seconds": 3.61052974301856,
+          "warm_seconds": [
+            3.61052974301856
+          ],
+          "median_seconds": 3.61052974301856,
+          "max_seconds": 3.61052974301856,
+          "median_rtf": 0.16610319320741726,
+          "outputs": [
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            }
+          ]
+        }
+      },
+      "providers": [
+        "CPUExecutionProvider"
+      ],
+      "model_load_seconds": 4.481715178000741,
+      "max_rss_mib": 910.17578125,
+      "sampled_peak_gpu_mib": 0
+    },
+    "stt-cpu-12": {
+      "task": "stt",
+      "device": "cpu",
+      "threads": 12,
+      "compute": "int8",
+      "runs": 5,
+      "cases": {
+        "short": {
+          "first_seconds": 2.2888747910037637,
+          "warm_seconds": [
+            2.15869284409564,
+            2.092334406101145,
+            2.216349806985818,
+            2.167782082920894,
+            2.109967040945776
+          ],
+          "median_seconds": 2.15869284409564,
+          "max_seconds": 2.216349806985818,
+          "median_rtf": 0.7165388949199956,
+          "outputs": [
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            }
+          ]
+        },
+        "long": {
+          "first_seconds": 2.4600278270663694,
+          "warm_seconds": [
+            2.470363365020603,
+            2.456384437973611,
+            2.5042337679769844,
+            2.4937653889646754,
+            2.4670464530354366
+          ],
+          "median_seconds": 2.470363365020603,
+          "max_seconds": 2.5042337679769844,
+          "median_rtf": 0.11364959507838994,
+          "outputs": [
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            }
+          ]
+        }
+      },
+      "model_load_seconds": 1.686392150935717,
+      "max_rss_mib": 1694.21484375,
+      "sampled_peak_gpu_mib": 0
+    },
+    "stt-cpu-4": {
+      "task": "stt",
+      "device": "cpu",
+      "threads": 4,
+      "compute": "int8",
+      "runs": 5,
+      "cases": {
+        "short": {
+          "first_seconds": 3.168768511968665,
+          "warm_seconds": [
+            2.815703721018508,
+            2.795708247111179,
+            3.038201165967621,
+            2.735907960915938,
+            2.737697514006868
+          ],
+          "median_seconds": 2.795708247111179,
+          "max_seconds": 3.038201165967621,
+          "median_rtf": 0.9279845918713805,
+          "outputs": [
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            }
+          ]
+        },
+        "long": {
+          "first_seconds": 3.1801523090107366,
+          "warm_seconds": [
+            3.532111078966409,
+            3.167525978991762,
+            3.1837206770433113,
+            3.175019323010929,
+            3.1978463410632685
+          ],
+          "median_seconds": 3.1837206770433113,
+          "max_seconds": 3.532111078966409,
+          "median_rtf": 0.14646775082241886,
+          "outputs": [
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            }
+          ]
+        }
+      },
+      "model_load_seconds": 19.694220997975208,
+      "max_rss_mib": 2243.67578125,
+      "sampled_peak_gpu_mib": 0
+    },
+    "stt-cuda-float16": {
+      "task": "stt",
+      "device": "cuda",
+      "threads": 4,
+      "compute": "float16",
+      "runs": 5,
+      "cases": {
+        "short": {
+          "first_seconds": 0.27334554900880903,
+          "warm_seconds": [
+            0.09606321598403156,
+            0.0944573599845171,
+            0.0952580530429259,
+            0.09270113601814955,
+            0.092690036050044
+          ],
+          "median_seconds": 0.0944573599845171,
+          "max_seconds": 0.09606321598403156,
+          "median_rtf": 0.03135340561557328,
+          "outputs": [
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            }
+          ]
+        },
+        "long": {
+          "first_seconds": 0.259091843967326,
+          "warm_seconds": [
+            0.2525634919293225,
+            0.2535650320351124,
+            0.2541867579566315,
+            0.2551814279286191,
+            0.25607105100061744
+          ],
+          "median_seconds": 0.2541867579566315,
+          "max_seconds": 0.25607105100061744,
+          "median_rtf": 0.01169391617650505,
+          "outputs": [
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            }
+          ]
+        }
+      },
+      "model_load_seconds": 1.1519522320013493,
+      "max_rss_mib": 1824.6796875,
+      "sampled_peak_gpu_mib": 2548
+    },
+    "stt-cuda-int8_float16": {
+      "task": "stt",
+      "device": "cuda",
+      "threads": 4,
+      "compute": "int8_float16",
+      "runs": 5,
+      "cases": {
+        "short": {
+          "first_seconds": 0.25368870107922703,
+          "warm_seconds": [
+            0.09230606001801789,
+            0.09567490895278752,
+            0.0910674799233675,
+            0.09131947800051421,
+            0.09043714602012187
+          ],
+          "median_seconds": 0.09131947800051421,
+          "max_seconds": 0.09567490895278752,
+          "median_rtf": 0.030311842664476944,
+          "outputs": [
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            },
+            {
+              "text": "Please tell me the weather forecast for tomorrow morning.",
+              "audio_seconds": 3.0126666666666666
+            }
+          ]
+        },
+        "long": {
+          "first_seconds": 0.2503077710280195,
+          "warm_seconds": [
+            0.24249028996564448,
+            0.24372824898455292,
+            0.2427030079998076,
+            0.242755317944102,
+            0.24224884191062301
+          ],
+          "median_seconds": 0.2427030079998076,
+          "max_seconds": 0.24372824898455292,
+          "median_rtf": 0.011165603803088833,
+          "outputs": [
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            },
+            {
+              "text": "Welcome to this synthetic speech benchmark. We are comparing speech recognition and voice synthesis on a desktop computer. The language model runs on a separate machine, while image generation shares this graphics card. Please keep the conversation clear and concise. We will measure response time and memory use without recording any private conversations.",
+              "audio_seconds": 21.736666666666668
+            }
+          ]
+        }
+      },
+      "model_load_seconds": 1.7781173120019957,
+      "max_rss_mib": 1843.79296875,
+      "sampled_peak_gpu_mib": 1588
+    },
+    "tts-cpu-12": {
+      "task": "tts",
+      "device": "cpu",
+      "threads": 12,
+      "compute": "int8",
+      "runs": 5,
+      "cases": {
+        "short": {
+          "first_seconds": 0.38487400102894753,
+          "warm_seconds": [
+            0.3548484640195966,
+            0.36035076598636806,
+            0.34778733598068357,
+            0.3452114389510825,
+            0.345434507005848
+          ],
+          "median_seconds": 0.34778733598068357,
+          "max_seconds": 0.36035076598636806,
+          "median_rtf": 0.11544169151826186,
+          "outputs": [
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            }
+          ]
+        },
+        "long": {
+          "first_seconds": 2.5229460870614275,
+          "warm_seconds": [
+            2.35910403507296,
+            2.351952987955883,
+            2.39711357105989,
+            2.413277200073935,
+            2.4089857370126992
+          ],
+          "median_seconds": 2.39711357105989,
+          "max_seconds": 2.413277200073935,
+          "median_rtf": 0.1102797226373205,
+          "outputs": [
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            }
+          ]
+        }
+      },
+      "providers": [
+        "CPUExecutionProvider"
+      ],
+      "model_load_seconds": 0.6173057990381494,
+      "max_rss_mib": 1290.14453125,
+      "sampled_peak_gpu_mib": 0
+    },
+    "tts-cpu-4": {
+      "task": "tts",
+      "device": "cpu",
+      "threads": 4,
+      "compute": "int8",
+      "runs": 5,
+      "cases": {
+        "short": {
+          "first_seconds": 0.5286545499693602,
+          "warm_seconds": [
+            0.5101889120414853,
+            0.48872842104174197,
+            0.4961776250274852,
+            0.4892312859883532,
+            0.4893225549021736
+          ],
+          "median_seconds": 0.4893225549021736,
+          "max_seconds": 0.5101889120414853,
+          "median_rtf": 0.16242173763072812,
+          "outputs": [
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            }
+          ]
+        },
+        "long": {
+          "first_seconds": 3.6456219430547208,
+          "warm_seconds": [
+            3.5688669950468466,
+            3.502158001065254,
+            3.504367721034214,
+            3.4970087140100077,
+            3.5100189100485295
+          ],
+          "median_seconds": 3.504367721034214,
+          "max_seconds": 3.5688669950468466,
+          "median_rtf": 0.16121918667539703,
+          "outputs": [
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            }
+          ]
+        }
+      },
+      "providers": [
+        "CPUExecutionProvider"
+      ],
+      "model_load_seconds": 0.6266337409615517,
+      "max_rss_mib": 1288.71875,
+      "sampled_peak_gpu_mib": 0
+    },
+    "tts-cuda": {
+      "task": "tts",
+      "device": "cuda",
+      "threads": 4,
+      "compute": "int8",
+      "runs": 5,
+      "cases": {
+        "short": {
+          "first_seconds": 0.3198309199651703,
+          "warm_seconds": [
+            0.03545468905940652,
+            0.034254439058713615,
+            0.033683643909171224,
+            0.033358327113091946,
+            0.03498267300892621
+          ],
+          "median_seconds": 0.034254439058713615,
+          "max_seconds": 0.03545468905940652,
+          "median_rtf": 0.011370139098931272,
+          "outputs": [
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            },
+            {
+              "audio_seconds": 3.0126666666666666,
+              "samples": 72304
+            }
+          ]
+        },
+        "long": {
+          "first_seconds": 0.6755807360168546,
+          "warm_seconds": [
+            0.6342263990081847,
+            0.6262891580117866,
+            0.6289053959771991,
+            0.6262515889247879,
+            0.6190313519909978
+          ],
+          "median_seconds": 0.6262891580117866,
+          "max_seconds": 0.6342263990081847,
+          "median_rtf": 0.028812566692767362,
+          "outputs": [
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            },
+            {
+              "audio_seconds": 21.736666666666668,
+              "samples": 521680
+            }
+          ]
+        }
+      },
+      "providers": [
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "model_load_seconds": 0.8413971490226686,
+      "max_rss_mib": 1493.76171875,
+      "sampled_peak_gpu_mib": 2492
+    }
+  },
+  "models": {
+    "kokoro-v1.0.onnx": "beb0d1848dee9a49da392cc3df26958d46cfa35d321edf434f52949153f0df3a",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "whisper_snapshots": [
+    "0a363e9161cbc7ed1431c9597a8ceaf0c4f78fcf"
+  ]
+}

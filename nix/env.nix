@@ -14,32 +14,11 @@ flake-utils.lib.eachSystem ["x86_64-linux" "aarch64-linux"] (system: let
     config.allowUnfree = true;
   };
 
-  # Read the uv.lock pinning faster-whisper / kokoro-onnx / pipecat-ai (and
-  # friends) from the workspace root.
-  workspace = uv2nix.lib.workspace.loadWorkspace {
-    workspaceRoot = ../.;
-  };
-
-  # One derivation per pinned wheel, using the hashes already in uv.lock.
-  # "wheel" preference enforces the no-source-builds promise: a dependency
-  # that has no prebuilt wheel fails the build loudly instead of compiling.
-  # All chosen dependencies ship aarch64 + x86_64 wheels (no torch anywhere).
-  overlay = workspace.mkPyprojectOverlay {
-    sourcePreference = "wheel";
-  };
-
-  pythonSet =
-    (pkgs.callPackage pyproject-nix.build.packages {
-      python = pkgs.python312;
-    }).overrideScope (lib.composeManyExtensions [
-      pyproject-build-systems.overlays.default
-      overlay
-    ]);
-
-  # One environment hosting all three services: the local `speech-server`
-  # package (console scripts speech-stt / speech-tts / speech-agent) plus the
-  # union of the stt / tts / agent dependency groups.
-  speechEnv = pythonSet.mkVirtualEnv "speech-env" workspace.deps.all;
+  mkEnv = cuda:
+    import ./package.nix {
+      inherit pkgs uv2nix pyproject-nix pyproject-build-systems cuda;
+    };
+  speechEnv = mkEnv false;
 
   # Pure-eval smoke test of the NixOS module: a full nixosSystem evaluation
   # with the module + DGX Spark preset enabled that materialises the rendered
@@ -71,10 +50,21 @@ in {
   # Reproducible python env for the speech servers built from the pinned
   # wheels. Exposes $out/bin/speech-stt, $out/bin/speech-tts,
   # $out/bin/speech-agent and $out/bin/python.
-  packages.speechEnv = speechEnv;
-  packages.default = speechEnv;
+  packages =
+    {
+      inherit speechEnv;
+      default = speechEnv;
+    }
+    // lib.optionalAttrs (system == "x86_64-linux") {
+      speechEnvCuda = mkEnv true;
+    };
 
   checks = {
+    speechApi = pkgs.runCommand "speech-api-tests" {nativeBuildInputs = [speechEnv];} ''
+      export HOME=$(mktemp -d)
+      python -m unittest discover -s ${../tests} -p 'test_*.py' -v
+      touch "$out"
+    '';
     # Prove the env is a coherent, importable python environment (no GPU, no
     # model downloads): every key module imports and the three console
     # scripts are on PATH.
@@ -130,7 +120,8 @@ in {
         import kokoro_onnx
         import pipecat
         import speech_server.agent
-        print("kokoro-onnx", kokoro_onnx.__version__)
+        from importlib.metadata import version
+        print("kokoro-onnx", version("kokoro-onnx"))
         print("pipecat", pipecat.__version__)
         print("agent OK")
         """

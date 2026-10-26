@@ -20,9 +20,9 @@ start if missing (same pattern as SGLang pulling weights).
 from __future__ import annotations
 
 import io
-import json
 import logging
 import os
+import threading
 import urllib.request
 from contextlib import asynccontextmanager
 from fractions import Fraction
@@ -39,6 +39,8 @@ log = logging.getLogger("speech_server.tts")
 HOST = os.environ.get("TTS_HOST", "127.0.0.1")
 PORT = int(os.environ.get("TTS_PORT", "8880"))
 DEFAULT_VOICE = os.environ.get("TTS_VOICE", "af_heart")
+DEVICE = os.environ.get("TTS_DEVICE", "cpu")
+CPU_THREADS = int(os.environ.get("TTS_CPU_THREADS", "4"))
 MODEL_FILE = os.environ.get("TTS_MODEL_FILE", "models/kokoro-v1.0.onnx")
 VOICES_FILE = os.environ.get("TTS_VOICES_FILE", "models/voices-v1.0.bin")
 
@@ -112,7 +114,9 @@ def _resolve_voice(available: set[str], requested: str) -> str:
             log.info("mapping OpenAI voice %r -> %s", v, aliased)
         return aliased
     if aliased:
-        log.warning("aliased voice %s not in model; using default %s", aliased, DEFAULT_VOICE)
+        log.warning(
+            "aliased voice %s not in model; using default %s", aliased, DEFAULT_VOICE
+        )
     else:
         log.warning("unknown voice %r; using default %s", requested, DEFAULT_VOICE)
     return DEFAULT_VOICE
@@ -161,11 +165,25 @@ def _encode_wav(pcm: bytes, sample_rate: int) -> bytes:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import onnxruntime as ort
     from kokoro_onnx import Kokoro
 
+    if DEVICE not in ("cpu", "cuda"):
+        raise ValueError("TTS_DEVICE must be cpu or cuda")
     _ensure_model_files()
-    log.info("loading kokoro from %s", MODEL_FILE)
-    app.state.kokoro = Kokoro(MODEL_FILE, VOICES_FILE)
+    log.info("loading kokoro from %s on %s", MODEL_FILE, DEVICE)
+    options = ort.SessionOptions()
+    options.intra_op_num_threads = CPU_THREADS
+    options.inter_op_num_threads = 1
+    provider = "CUDAExecutionProvider" if DEVICE == "cuda" else "CPUExecutionProvider"
+    session = ort.InferenceSession(
+        MODEL_FILE, sess_options=options, providers=[provider]
+    )
+    if session.get_providers()[0] != provider:
+        raise RuntimeError(f"Requested {provider}, but ONNX Runtime fell back to CPU")
+    app.state.kokoro = Kokoro.from_session(session, VOICES_FILE)
+    app.state.inference_lock = threading.Lock()
+    app.state.backend = provider
     log.info("kokoro ready; voices: %s", ", ".join(app.state.kokoro.get_voices()))
     yield
 
@@ -175,7 +193,7 @@ app = FastAPI(title="speech-server TTS", lifespan=lifespan)
 
 @app.get("/health")
 async def health() -> dict[str, Any]:
-    return {"status": "ok", "model": "kokoro-v1.0"}
+    return {"status": "ok", "model": "kokoro-v1.0", "backend": app.state.backend}
 
 
 @app.get("/v1/models")
@@ -204,17 +222,20 @@ def speech(req: SpeechRequest) -> Response:
         raise HTTPException(400, f"input exceeds {MAX_INPUT_CHARS} characters")
     if req.response_format not in ("mp3", "wav", "pcm"):
         raise HTTPException(
-            400, f"response_format must be one of mp3, wav, pcm (got {req.response_format!r})"
+            400,
+            f"response_format must be one of mp3, wav, pcm (got {req.response_format!r})",
         )
     speed = min(max(req.speed, 0.5), 2.0)  # kokoro-onnx valid range
 
     voice = _resolve_voice(set(kokoro.get_voices()), req.voice)
-    audio, sample_rate = kokoro.create(
-        req.input,
-        voice=voice,
-        speed=speed,
-        lang=_lang_for_voice(voice),
-    )
+    # One synthesis at a time: predictable VRAM use alongside image serving.
+    with app.state.inference_lock:
+        audio, sample_rate = kokoro.create(
+            req.input,
+            voice=voice,
+            speed=speed,
+            lang=_lang_for_voice(voice),
+        )
     pcm = _to_s16(audio)
 
     if req.response_format == "mp3":

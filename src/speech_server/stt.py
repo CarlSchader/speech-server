@@ -16,6 +16,7 @@ Environment (set by the NixOS module):
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import io
 import json
@@ -23,12 +24,13 @@ import logging
 import os
 import re
 from contextlib import asynccontextmanager
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 import uvicorn
 from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from faster_whisper import WhisperModel
+from starlette.concurrency import run_in_threadpool
 
 log = logging.getLogger("speech_server.stt")
 
@@ -37,6 +39,7 @@ PORT = int(os.environ.get("STT_PORT", "8100"))
 MODEL_NAME = os.environ.get("STT_MODEL", "large-v3-turbo")
 DEVICE = os.environ.get("STT_DEVICE", "auto")
 COMPUTE_TYPE = os.environ.get("STT_COMPUTE_TYPE", "")
+CPU_THREADS = int(os.environ.get("STT_CPU_THREADS", "4"))
 VAD_FILTER = os.environ.get("STT_VAD_FILTER", "true").lower() in ("1", "true", "yes")
 
 
@@ -50,7 +53,7 @@ def _resolve_backend() -> tuple[str, str]:
             import ctranslate2
 
             device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
-        except Exception:
+        except (ImportError, RuntimeError):
             device = "cpu"
     compute_type = COMPUTE_TYPE or ("float16" if device == "cuda" else "int8")
     return device, compute_type
@@ -60,7 +63,10 @@ def _resolve_backend() -> tuple[str, str]:
 async def lifespan(app: FastAPI):
     device, compute_type = _resolve_backend()
     log.info("loading %s on %s (compute_type=%s)", MODEL_NAME, device, compute_type)
-    app.state.model = WhisperModel(MODEL_NAME, device=device, compute_type=compute_type)
+    app.state.model = WhisperModel(
+        MODEL_NAME, device=device, compute_type=compute_type, cpu_threads=CPU_THREADS
+    )
+    app.state.inference_lock = asyncio.Lock()
     app.state.backend = f"{device}/{compute_type}"
     log.info("model loaded; STT ready on %s:%d", HOST, PORT)
     yield
@@ -69,7 +75,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="speech-server STT", lifespan=lifespan)
 
 
-def _normalise_language(language: str) -> Optional[str]:
+def _normalise_language(language: str) -> str | None:
     """Map OpenAI-style language hints to faster-whisper (None = autodetect)."""
     language = (language or "").strip().lower()
     if language in ("", "auto", "none", "und", "en-us", "en_us"):
@@ -92,7 +98,7 @@ def _transcribe(model: WhisperModel, audio: bytes, language: str):
 
 
 def _format_timestamp(seconds: float) -> str:
-    ms = int(round(seconds * 1000))
+    ms = round(seconds * 1000)
     h, ms = divmod(ms, 3_600_000)
     m, ms = divmod(ms, 60_000)
     s, ms = divmod(ms, 1000)
@@ -104,7 +110,9 @@ def _render_segments(segs, fmt: str) -> str:
         header = "WEBVTT\n\n" if fmt == "vtt" else ""
         lines = [header]
         for i, s in enumerate(segs, start=1):
-            lines.append(f"{i}\n{_format_timestamp(s.start)} --> {_format_timestamp(s.end)}\n{s.text.strip()}\n")
+            lines.append(
+                f"{i}\n{_format_timestamp(s.start)} --> {_format_timestamp(s.end)}\n{s.text.strip()}\n"
+            )
         return "\n".join(lines)
     raise ValueError(f"unsupported subtitle format: {fmt}")
 
@@ -135,13 +143,13 @@ async def models() -> dict[str, Any]:
 @app.post("/v1/audio/transcriptions")
 async def transcriptions(
     request: Request,
-    file: Annotated[Optional[UploadFile], File()] = None,
+    file: Annotated[UploadFile | None, File()] = None,
     model: str = Form("speech-stt"),
     language: str = Form(""),
     response_format: str = Form("json"),
-    prompt: Optional[str] = Form(None),
-    temperature: Optional[float] = Form(None),  # accepted, ignored
-    include: Optional[str] = Form(None),  # accepted, ignored
+    prompt: str | None = Form(None),
+    temperature: float | None = Form(None),  # accepted, ignored
+    include: str | None = Form(None),  # accepted, ignored
 ):
     """OpenAI Whisper-shaped transcription endpoint.
 
@@ -156,7 +164,9 @@ async def transcriptions(
         if not ctype.startswith("application/json"):
             return JSONResponse(
                 status_code=400,
-                content={"error": {"message": "multipart form file or JSON body required"}},
+                content={
+                    "error": {"message": "multipart form file or JSON body required"}
+                },
             )
         body = json.loads(await request.body())
         raw = body.get("file") or body.get("input_audio") or ""
@@ -166,7 +176,9 @@ async def transcriptions(
         if not raw:
             return JSONResponse(
                 status_code=400,
-                content={"error": {"message": "no audio found (expected file/input_audio)"}},
+                content={
+                    "error": {"message": "no audio found (expected file/input_audio)"}
+                },
             )
         audio = base64.b64decode(re.sub(r"\s+", "", raw))
 
@@ -178,8 +190,13 @@ async def transcriptions(
 
     whisper_model = app.state.model
     try:
-        segs, info, text = _transcribe(whisper_model, audio, _normalise_language(language))
-    except Exception as e:  # noqa: BLE001 - report, don't crash the server
+        # Keep health/control requests responsive during inference; serialize
+        # model work to bound accelerator memory under concurrent clients.
+        async with app.state.inference_lock:
+            segs, info, text = await run_in_threadpool(
+                _transcribe, whisper_model, audio, _normalise_language(language)
+            )
+    except Exception as e:
         log.exception("transcription failed")
         return JSONResponse(
             status_code=500,
@@ -189,7 +206,9 @@ async def transcriptions(
     if response_format == "text":
         return PlainTextResponse(text)
     if response_format in ("srt", "vtt"):
-        return Response(content=_render_segments(segs, response_format), media_type="text/plain")
+        return Response(
+            content=_render_segments(segs, response_format), media_type="text/plain"
+        )
 
     payload: dict[str, Any] = {
         "text": text,
@@ -204,7 +223,7 @@ async def transcriptions(
                 "end": round(s.end, 3),
                 "text": s.text.strip(),
                 "tokens": list(s.tokens or []),
-                "token_probs": [round(t, 6) for t in (s.token_probs or [])],
+                "avg_logprob": s.avg_logprob,
             }
             for i, s in enumerate(segs)
         ]
