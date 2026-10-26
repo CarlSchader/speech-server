@@ -28,11 +28,11 @@ Environment (set by the NixOS module):
 
 from __future__ import annotations
 
+import json
 import os
 import sys
 
 from loguru import logger
-
 from pipecat.audio.vad.silero import SileroVADAnalyzer
 from pipecat.frames.frames import LLMRunFrame
 from pipecat.pipeline.pipeline import Pipeline
@@ -45,6 +45,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
 from pipecat.runner.types import RunnerArguments
 from pipecat.runner.utils import create_transport
 from pipecat.serializers.protobuf import ProtobufFrameSerializer
+from pipecat.services.openai.base_llm import OpenAILLMSettings
 from pipecat.services.openai.llm import OpenAILLMService
 from pipecat.services.openai.stt import OpenAISTTService
 from pipecat.services.openai.tts import OpenAITTSService
@@ -57,6 +58,9 @@ AGENT_PORT = int(os.environ.get("AGENT_PORT", "8765"))
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "http://127.0.0.1:30000/v1")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "EMPTY")
 LLM_MODEL = os.environ.get("LLM_MODEL", "qwen3.8-27b")
+LLM_EXTRA_BODY = json.loads(os.environ.get("LLM_EXTRA_BODY", "{}"))
+if not isinstance(LLM_EXTRA_BODY, dict):
+    raise TypeError("LLM_EXTRA_BODY must be a JSON object")
 
 STT_BASE_URL = os.environ.get("STT_BASE_URL", "http://127.0.0.1:8100/v1")
 STT_API_KEY = os.environ.get("STT_API_KEY", "EMPTY")
@@ -88,8 +92,11 @@ TRANSPORT_PARAMS = {
 async def run_bot(transport, runner_args: RunnerArguments) -> None:
     """Build and run the STT -> LLM -> TTS pipeline for one connected client."""
     logger.info(
-        "Starting speech agent: LLM=%s STT=%s TTS=%s/%s",
-        LLM_MODEL, STT_MODEL, TTS_MODEL, TTS_VOICE,
+        "Starting speech agent: LLM={} STT={} TTS={}/{}",
+        LLM_MODEL,
+        STT_MODEL,
+        TTS_MODEL,
+        TTS_VOICE,
     )
 
     stt = OpenAISTTService(
@@ -101,6 +108,7 @@ async def run_bot(transport, runner_args: RunnerArguments) -> None:
         model=LLM_MODEL,
         api_key=LLM_API_KEY,
         base_url=LLM_BASE_URL,
+        settings=OpenAILLMSettings(extra={"extra_body": LLM_EXTRA_BODY}),
     )
     tts = OpenAITTSService(
         api_key=TTS_API_KEY,
@@ -145,7 +153,7 @@ async def run_bot(transport, runner_args: RunnerArguments) -> None:
     async def on_client_ready(rtvi):
         logger.info("Pipecat client ready.")
         context.add_message(
-            {"role": "developer", "content": "Start by briefly introducing yourself."},
+            {"role": "user", "content": "Start by briefly introducing yourself."},
         )
         await worker.queue_frames([LLMRunFrame()])
 

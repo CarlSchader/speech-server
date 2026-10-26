@@ -16,9 +16,11 @@ Plus `services.speech.openWebUi` which computes the `AUDIO_*` environment
 variables Open WebUI needs for dictation (STT) and read-aloud (TTS) against
 those servers.
 
-Everything is CPU-bound on the machine: the LLM (the only GPU-hungry part) is
-the existing SGLang server. On a DGX Spark the speech stack budgets ~5–6 GB of
-the 128 GB unified memory.
+CPU remains the portable default. On x86_64 NVIDIA hosts, `speechEnvCuda`
+supports CUDA STT (CTranslate2 INT8/FP16) and CUDA TTS (ONNX Runtime), with
+explicit runtime libraries and device permissions. The LLM may be remote:
+Tower speech was tested against DGX's vLLM OpenAI-compatible endpoint.
+See [Tower benchmarks and CUDA deployment](docs/tower-cuda.md).
 
 See [docs/usage.md](docs/usage.md) for deployment and
 [RESEARCH.md](RESEARCH.md) for the full component survey and reasoning.
