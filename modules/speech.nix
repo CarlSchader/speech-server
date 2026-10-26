@@ -87,7 +87,10 @@
         // lib.optionalAttrs gpu {
           PrivateDevices = false;
           DevicePolicy = "closed";
-          DeviceAllow = ["char-nvidia-frontend rw" "char-nvidia-uvm rw" "char-nvidia-caps rw"];
+          # NVIDIA driver versions expose major 195 as nvidiactl/nvidia,
+          # not necessarily nvidia-frontend. Both names cover that major;
+          # without it CUDA reports no device even when /dev is visible.
+          DeviceAllow = ["char-nvidiactl rw" "char-nvidia-frontend rw" "char-nvidia-uvm rw" "char-nvidia-caps rw"];
         };
     };
   };

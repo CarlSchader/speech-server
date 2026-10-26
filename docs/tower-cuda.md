@@ -24,6 +24,12 @@ services.speech = {
 
 The host must provide working NVIDIA drivers. CUDA units load CUDA 12/cuDNN 9
 libraries and expose only NVIDIA device classes; CPU units retain PrivateDevices.
+The allowlist includes `char-nvidiactl`: Tower's driver exposes major 195 as
+`nvidia`/`nvidiactl`, not `nvidia-frontend`. Omitting it caused both deployed
+services to report no CUDA device despite working unsandboxed inference.
+Adding that device permission restored both systemd services; trusted HTTPS
+TTS→STT and the public WSS voice session through DGX vLLM then passed.
+`speechCudaDevicePolicy` checks the allowlist and CPU sandbox separation.
 The ONNX GPU wheel is pinned by SHA256; the unused TensorRT provider is removed.
 The x86_64 Numba wheel's TBB dependency is explicit. Upstream CPU wheels and
 lock-file dependency versions otherwise remain unchanged. `nix/package.nix`
