@@ -46,6 +46,15 @@ flake-utils.lib.eachSystem ["x86_64-linux" "aarch64-linux"] (system: let
       }
     ];
   };
+  cudaEval =
+    (moduleEval.extendModules {
+      modules = [
+        {
+          services.speech.stt.device = lib.mkForce "cuda";
+          services.speech.tts.device = "cuda";
+        }
+      ];
+    }).config;
 in {
   # Reproducible python env for the speech servers built from the pinned
   # wheels. Exposes $out/bin/speech-stt, $out/bin/speech-tts,
@@ -60,6 +69,20 @@ in {
     };
 
   checks = {
+    speechCudaDevicePolicy = let
+      gpuUnits = map (name: cudaEval.systemd.services.${name}.serviceConfig) ["speech-stt" "speech-tts"];
+      cpuUnits = map (name: moduleEval.config.systemd.services.${name}.serviceConfig) ["speech-stt" "speech-tts" "speech-agent"];
+    in
+      assert lib.all (unit:
+        unit.DevicePolicy
+        == "closed"
+        && !unit.PrivateDevices
+        && lib.elem "char-nvidiactl rw" unit.DeviceAllow
+        && lib.elem "char-nvidia-uvm rw" unit.DeviceAllow)
+      gpuUnits;
+      assert lib.all (unit: unit.PrivateDevices) cpuUnits;
+      assert cudaEval.systemd.services.speech-agent.serviceConfig.PrivateDevices;
+        pkgs.runCommand "speech-cuda-device-policy" {} ''touch "$out"'';
     speechApi = pkgs.runCommand "speech-api-tests" {nativeBuildInputs = [speechEnv];} ''
       export HOME=$(mktemp -d)
       python -m unittest discover -s ${../tests} -p 'test_*.py' -v
